@@ -20,6 +20,9 @@ def conflictPred(c,alpha):
         p[i+1] = p[i]*(1-alpha) + c[i]*alpha
     return p
 
+
+sbjList = [1,3,4,5,6,7,8,9,11,13,14,15,17,18,19,20, 23,24,25,26,27,29]
+
 colNames = ['sbjId','faceId','nameId','conflict','zRT','RT']
 df_group = pd.read_csv('ISPC_behavior.csv', header=0, names=colNames)
 df_gp_wCP = pd.DataFrame()
@@ -27,7 +30,8 @@ gp_alphas = pd.DataFrame()
 
 SCNT=-1
 
-for S in np.unique(df_group.sbjId):
+
+for S in sbjList:
     SCNT = SCNT+1    
     df = df_group.loc[df_group.sbjId==S,:]
     
@@ -83,5 +87,5 @@ for S in np.unique(df_group.sbjId):
 
 # end of all subjects' modeling
 df_gp_wCP.to_pickle('df_wCP.pkl')
-
+gp_alphas.to_pickle('df_alphas.pkl')
 

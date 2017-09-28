@@ -7,14 +7,13 @@ Created on Mon Aug 14 10:42:51 2017
 
 import os
 import pandas as pd
-import numpy as np
 
 workingDir = os.path.dirname(os.path.realpath(__file__))
 os.chdir(workingDir)
 
-
-df_gp = pd.read_pickle('df_wCP.pkl')
-sbjList = [1,3,4,5,6,7,8,9,11,13,14,15,17,18,18,29,23,24,25,26,27,29]
+#%%
+df_gp = pd.read_pickle('df_wCP_v3.pkl')
+sbjList = [1,3,4,5,6,7,8,9,11,13,14,15,17,18,19,20, 23,24,25,26,27,29]
 
 #sbjList = np.unique(df_gp.sbjId)
 
@@ -45,7 +44,7 @@ for S in sbjList:
     df.conflictProb.replace(0.25,'rare_Inc', inplace=True)
     df.conflictProb.replace(0.75,'freq_Inc', inplace=True)
     df['conflictProb']  = pd.Categorical(df.conflictProb, categories=['rare_Inc','freq_Inc'], ordered=True)
-    sbjRT = df.groupby(['bkType','conflictProb','conflict']).RT.mean()
+    sbjRT = df[df.zRT.notnull()].groupby(['bkType','conflictProb','conflict']).RT.mean()
     
     gp_ISPC.loc[gp_ISPC.sbjId==S,'SC_ISPC']=(sbjRT[1]-sbjRT[0])-(sbjRT[3]-sbjRT[2])
     gp_ISPC.loc[gp_ISPC.sbjId==S,'SR_ISPC']=(sbjRT[5]-sbjRT[4])-(sbjRT[7]-sbjRT[6])
@@ -56,8 +55,8 @@ for S in sbjList:
     gp_meanRT = pd.concat((gp_meanRT, sbjRT),axis=0)
 
 
-
-Weights = pd.read_pickle('gp_PEweights.pkl')
+#%%
+Weights = pd.read_pickle('gp_PEweights_v3.pkl')
 gp_meanRT.reset_index(inplace=True)
 gp_ISPC = gp_ISPC.merge(Weights)
 
@@ -69,9 +68,9 @@ gp_ISPC = gp_ISPC.merge(Weights)
 import seaborn as sns
 sns.factorplot(x='conflictProb',y = 'RT', data=gp_meanRT, hue='conflict',col='bkType')
 
-#sns.regplot(x = 'SC_ISPC', y = 'SC_face', data = gp_ISPC,color="r")
-#sns.regplot(x = 'SC_ISPC', y = 'SC_name', data = gp_ISPC,color="b")
+sns.regplot(x = 'SC_ISPC', y = 'SC_face', data = gp_ISPC,color="r")
+sns.regplot(x = 'SC_ISPC', y = 'SC_name', data = gp_ISPC,color="b")
 
-#sns.regplot(x = 'SR_ISPC', y = 'SR_face', data = gp_ISPC,color="r")
-#sns.regplot(x = 'SR_ISPC', y = 'SR_name', data = gp_ISPC,color="b")
+sns.regplot(x = 'SR_ISPC', y = 'SR_face', data = gp_ISPC,color="r")
+sns.regplot(x = 'SR_ISPC', y = 'SR_name', data = gp_ISPC,color="b")
 

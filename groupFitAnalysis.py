@@ -15,7 +15,8 @@ os.chdir(workingDir)
 
 
 df_gp = pd.read_pickle('df_wCP.pkl')
-sbjList = np.unique(df_gp.sbjId)
+#sbjList = np.unique(df_gp.sbjId)
+sbjList = [1,3,4,5,6,7,8,9,11,13,14,15,17,18,19,20,23,24,25,26,27,29]
 
 newCol = ['bkType','runId','faceRep','nameRep','fullRepAlt','PE_face','PE_name']
 for i in newCol:
@@ -56,6 +57,7 @@ for S in sbjList:
         X2 = np.array(df.loc[df.bkType==bkType, DMreg2], dtype=float)
         X1 = np.concatenate((X1, np.ones((len(X1),1))),axis=1)
         X2 = np.concatenate((X2, np.ones((len(X2),1))),axis=1)        
+        
         RT = stats.zscore(df.loc[df.bkType==bkType, 'RT'])
         beta1 = np.dot(np.linalg.pinv(X1),RT)
         beta2 = np.dot(np.linalg.pinv(X2),RT)
@@ -75,7 +77,8 @@ gp_result.to_pickle('gp_PEweights.pkl')
 
 
 #%% Notes - could use sm.GLM
-#gaussian_model = sm.GLM(RT, X1, family=sm.families.Gaussian())
-
-
+import statsmodels.api as sm
+gaussian_model = sm.GLM(RT, X1, family=sm.families.Gaussian())
+gaussian_results = gaussian_model.fit()
+print(gaussian_results.summary())
 
